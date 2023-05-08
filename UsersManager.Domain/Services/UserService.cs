@@ -80,19 +80,12 @@ public class UserService : IUserService
         if (user is null)
             return false;
 
-        user.State.Code = _mapper.Map<DbUserStateCode>(StateCode.Blocked.ToString());
+        user.State.Code = _mapper.Map<DbUserStateCode>(StateCode.Blocked);
         await _context.SaveChangesAsync(CancellationToken.None);
         return true;
     }
 
     public async Task<User?> GetUser(string login, CancellationToken token)
-    {
-        var user = await GetActiveUsers().FirstOrDefaultAsync(x => x.Login == login, token);
-
-        return user is not null ? _mapper.Map<User>(user) : null;
-    }
-
-    public async Task<User?> GetUserByLogin(string login, CancellationToken token = default)
     {
         var user = await GetActiveUsers().FirstOrDefaultAsync(x => x.Login == login, token);
 
@@ -108,9 +101,9 @@ public class UserService : IUserService
         return users.Select(_mapper.Map<User>);
     }
 
-    public async Task<bool> Authenticate(string username, string password)
+    public async Task<bool> Authenticate(string username, string password, CancellationToken token)
     {
-        var user = await GetUserByLogin(username);
+        var user = await GetUser(username, token);
         if (user is null)
             return false;
         var hashData = SHA256.HashData(Encoding.UTF8.GetBytes(password));
