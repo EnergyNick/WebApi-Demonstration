@@ -23,6 +23,8 @@ builder.Services.AddValidatorsFromAssemblyContaining(typeof(Program));
 builder.Services.AddAutoMapper(typeof(Program), typeof(DataBaseSettings), typeof(ServicesSettings));
 builder.AddLoggingProvider();
 
+builder.Services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, UserAuthenticationHandler>("BasicAuthentication", null);
 
 var app = builder.Build();
 
@@ -37,6 +39,9 @@ app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
