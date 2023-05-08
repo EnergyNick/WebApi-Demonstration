@@ -23,16 +23,20 @@ public class UserAuthenticationHandler : AuthenticationHandler<AuthenticationSch
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var authorizationHeader = Request.Headers["Authorization"].ToString();
-        if (authorizationHeader.StartsWith("basic", StringComparison.OrdinalIgnoreCase))
+        var authHeader = Request.Headers["Authorization"].ToString();
+        if (authHeader.StartsWith(ServiceAuthentication.AuthType.ToLower(), StringComparison.OrdinalIgnoreCase))
         {
-            var token = authorizationHeader["Basic ".Length..].Trim();
+            var token = authHeader.Substring(ServiceAuthentication.AuthType.Length + 1).Trim();
             var credentialsAsEncodedString = Encoding.UTF8.GetString(Convert.FromBase64String(token));
             var credentials = credentialsAsEncodedString.Split(':');
             if (await _userRepository.Authenticate(credentials[0], credentials[1]))
             {
-                var claims = new[] { new Claim("name", credentials[0]), new Claim(ClaimTypes.Role, "Admin") };
-                var identity = new ClaimsIdentity(claims, "Basic");
+                var claims = new[]
+                {
+                    new Claim(ServiceAuthentication.NameClaimType, credentials[0]),
+                    new Claim(ClaimTypes.Role, ServiceAuthentication.AdminRole)
+                };
+                var identity = new ClaimsIdentity(claims, ServiceAuthentication.AuthType);
                 var claimsPrincipal = new ClaimsPrincipal(identity);
                 var result = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name));
                 return await Task.FromResult(result);
