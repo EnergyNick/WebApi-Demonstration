@@ -9,4 +9,6 @@ public interface IUserService
 
     Task<User?> GetUser(string login, CancellationToken token = default);
     Task<IEnumerable<User>> GetUsers(int? pageSize, int? pageIndex, CancellationToken token = default);
+
+    public Task<bool> Authenticate(string username, string password);
 }

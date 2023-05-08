@@ -108,6 +108,17 @@ public class UserService : IUserService
         return users.Select(_mapper.Map<User>);
     }
 
+    public async Task<bool> Authenticate(string username, string password)
+    {
+        var user = await GetUserByLogin(username);
+        if (user is null)
+            return false;
+        var hashData = SHA256.HashData(Encoding.UTF8.GetBytes(password));
+        var passwordHashed = Encoding.UTF8.GetString(hashData);
+
+        return passwordHashed == user.PasswordHash;
+    }
+
     private IQueryable<DbUser> GetUsers() => _context.Users.Include(x => x.State).Include(x => x.Group);
     private IQueryable<DbUser> GetActiveUsers() => _context.Users
         .Include(x => x.State)
