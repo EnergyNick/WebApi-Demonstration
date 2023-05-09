@@ -8,7 +8,7 @@ public interface IUserService
     Task<bool> DeleteUser(string login, CancellationToken token = default);
 
     Task<User?> GetUser(string login, CancellationToken token = default);
-    Task<IEnumerable<User>> GetUsers(int? pageSize, int? pageIndex, CancellationToken token = default);
+    Task<IEnumerable<User>> GetUsers(int? pageSize = null, int? pageIndex = null, CancellationToken token = default);
 
     public Task<bool> Authenticate(string username, string password, CancellationToken token = default);
 }

@@ -23,7 +23,7 @@ public class UserService : IUserService
         _options = options.Value;
     }
 
-    public async Task<User> CreateUser(CreateUserRequest userInfo, CancellationToken token)
+    public async Task<User> CreateUser(CreateUserRequest userInfo, CancellationToken token = default)
     {
         var existingUser = await GetUsers().FirstOrDefaultAsync(x => x.Login == userInfo.Login, token);
         if (existingUser is not null
@@ -73,7 +73,7 @@ public class UserService : IUserService
         return _mapper.Map<User>(user);
     }
 
-    public async Task<bool> DeleteUser(string login, CancellationToken token)
+    public async Task<bool> DeleteUser(string login, CancellationToken token = default)
     {
         var user = await GetActiveUsers().FirstOrDefaultAsync(x => x.Login == login, token);
 
@@ -85,14 +85,14 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<User?> GetUser(string login, CancellationToken token)
+    public async Task<User?> GetUser(string login, CancellationToken token = default)
     {
         var user = await GetActiveUsers().FirstOrDefaultAsync(x => x.Login == login, token);
 
         return user is not null ? _mapper.Map<User>(user) : null;
     }
 
-    public async Task<IEnumerable<User>> GetUsers(int? pageSize, int? pageIndex, CancellationToken token)
+    public async Task<IEnumerable<User>> GetUsers(int? pageSize = null, int? pageIndex = null, CancellationToken token = default)
     {
         var users = await GetActiveUsers()
             .PaginateIfNeeded(pageSize, pageIndex)
@@ -101,7 +101,7 @@ public class UserService : IUserService
         return users.Select(_mapper.Map<User>);
     }
 
-    public async Task<bool> Authenticate(string username, string password, CancellationToken token)
+    public async Task<bool> Authenticate(string username, string password, CancellationToken token = default)
     {
         var user = await GetUser(username, token);
         if (user is null)
