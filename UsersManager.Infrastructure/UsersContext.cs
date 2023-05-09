@@ -5,12 +5,13 @@ namespace UsersManager.Infrastructure;
 
 public class UsersContext : DbContext
 {
-    public DbSet<DbUser> Users => Set<DbUser>();
-    public DbSet<DbUserGroup> Groups => Set<DbUserGroup>();
-    public DbSet<DbUserState> States => Set<DbUserState>();
+    public virtual DbSet<DbUser> Users => Set<DbUser>();
+    public virtual DbSet<DbUserGroup> Groups => Set<DbUserGroup>();
+    public virtual DbSet<DbUserState> States => Set<DbUserState>();
+
+    public UsersContext()
+    { }
 
     public UsersContext(DbContextOptions options) : base(options)
-    {
-        base.Database.EnsureCreated();
-    }
+    { }
 }
